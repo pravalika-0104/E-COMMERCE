@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Home - Products</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="loadMenu.js"></script>
+  <style>
+    .pdt-card {
+      background-color: maroon;
+      width: fit-content;
+      color: white;
+      display: inline-block;
+      margin: 10px;
+      padding: 15px;
+      border-radius: 10px;
+    }
+    .name {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .price {
+      font-size: 20px;
+      color: gold;
+    }
+    .detail {
+      font-style: italic;
+      letter-spacing: 1px;
+    }
+    .pdt-img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+    .action {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="header"></div>
+
+  <div class="container mt-4">
+    <div id="parent" class="d-flex flex-wrap justify-content-start"></div>
+  </div>
+
+  <script>
+    const SERVER_ROOT = "http://localhost:3000";
+    const parentObj = document.getElementById("parent");
+    const headerObj = document.getElementById("header");
+
+    async function getProducts() {
+  try {
+    const response = await fetch(`${SERVER_ROOT}/product/public`);
+    const data = await response.json();
+    if (data.error) {
+      alert(data.message);
+    } else {
+      parentObj.innerHTML = '';
+      data.data.forEach(product => {
+        parentObj.innerHTML += `
+          <div class='pdt-card'>
+            <img class="pdt-img" src="${SERVER_ROOT}/uploads/${product.impath}" alt="Product Image">
+            <div class='name'>${product.name}</div>
+            <div class='price'>${product.price} Rs</div>
+            <div class='detail'>${product.detail}</div>
+            <div class='action'>
+              <button class='btn btn-warning' onclick='addCart(${product.pid})'>Add to Cart</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+  } catch (error) {
+    console.error("Error loading products:", error);
+    alert("Failed to load products");
+  }
+}
+
+
+    async function addCart(pid) {
+      const token = sessionStorage.getItem("token");
+      const payload = { pid };
+
+      try {
+        const response = await fetch(`${SERVER_ROOT}/cart/add`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": token
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (!data.error) {
+          alert(data.message);
+          location.href = "view_cart.html";
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error("Add to cart failed:", error);
+        alert("Something went wrong while adding to cart.");
+      }
+    }
+
+    getProducts();
+  </script>
+</body>
+</html>

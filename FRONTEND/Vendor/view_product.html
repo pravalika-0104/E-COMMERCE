@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .pdt-card {
+            background-color:maroon;
+            width: fit-content;
+            color: white;
+            display: inline-block;
+            margin: 5px;
+            padding: 10px;
+        }
+        .name {
+            font-size: 24px;
+        }
+        .price {
+            font-size: 22px;
+            color: gold;
+        }
+        .price::after {
+            content: " Rs";
+            font-size: 16px;
+        }
+        .detail {
+            font-style: italic;
+            letter-spacing: 3px;
+            text-transform: capitalize;
+        }
+        .action {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+}
+
+    </style>
+    <script src="loadMenu.js"></script>
+</head>
+<body>
+    <div id="header"></div>
+    <div id="parent"></div>
+
+    <script>
+        const SERVER_ROOT = "http://localhost:3000";
+        const parentObj = document.getElementById("parent");
+
+        async function getProducts() {
+            const token = sessionStorage.getItem("token");
+            const response = await fetch(`${SERVER_ROOT}/product/all`, {
+                method: "GET",
+                headers: {
+                    "Authorization": token
+                }
+            });
+
+            const responseData = await response.json();
+            console.log(responseData);
+
+            if (responseData.error) {
+                alert(responseData.message);
+            } else {
+                parentObj.innerHTML = ""; // clear before appending
+                responseData.data.forEach((product) => {
+                    parentObj.innerHTML += `
+                        <div class='pdt-card'>
+                            <img src='${SERVER_ROOT}/uploads/${product.impath}' 
+                                 width='200' height='150' 
+                                 onerror="this.onerror=null;this.src='https://via.placeholder.com/200x150?text=No+Image';">
+                            <div class='name'>${product.name}</div>
+                            <div class='price'>${product.price}</div>
+                            <div class='detail'>${product.detail}</div>
+                            <div class='action'>
+                                <button class='btn btn-warning' onclick='editProduct(${product.pid})'>Edit</button>
+                                <button class='btn btn-danger' onclick="deleteProduct(${product.pid}, '${product.name}')">Delete</button>
+                            </div>
+                        </div>`;
+                });
+            }
+        }
+
+        async function deleteProduct(pid, name) {
+            const res = confirm(`Are you sure want to delete '${name}'?`);
+            if (res) {
+                const token = sessionStorage.getItem("token");
+                const response = await fetch(`${SERVER_ROOT}/product/delete/${pid}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": token
+                    }
+                });
+                const data = await response.json();
+                alert(data.message);
+                if (!data.error) 
+                getProducts();
+            }
+        }
+
+        function editProduct(pid) {
+            sessionStorage.setItem("editPid", pid);
+            location.href = "edit.html";
+        }
+
+        getProducts();
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+</head>
+<body>
+    <form  method="post" onsubmit=" signup(); return false;">
+        <h2>Signup Here...</h2>
+        <input id="uname" required type="text" placeholder="username">
+        <input id="upass" required type="password" placeholder="password">
+        <select id="urole">
+            <option value="Vendor">Vendor</option>
+            <option value="Customer">Customer</option>
+        </select>
+        <button >Signup</button>
+        <div>
+        <a href="login.html">Signup Here...</a>
+        </div>
+
+    </form>
+    <script>
+
+        SERVER_PATH="http://localhost:3000"
+        //Task: study about promises,async and await example
+        async function signup(){
+            unameObj=document.getElementById("uname")
+            upassObj=document.getElementById("upass")
+            uroleObj=document.getElementById("urole")
+
+            payload={username:unameObj.value,password:upassObj.value,role:uroleObj.value}
+            
+            const response=await fetch(`${SERVER_PATH}/auth/signup`,{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify(payload)
+            })
+            responseData=await response.json()
+            if(responseData.token){
+                sessionStorage.setItem("token",responseData.token)
+                location.href="upload.html";
+            }
+            alert(responseData.message)
+            console.log("Response Data=",responseData)
+        
+        } 
+        
+    </script>
+</body>
+</html>

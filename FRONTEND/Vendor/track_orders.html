@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vendor Orders</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #fff7f0;
+    padding: 20px;
+  }
+
+  h2 {
+    text-align: center;
+    color: #d2691e;
+    margin-bottom: 30px;
+  }
+
+  .order-card {
+    background-color: #ffe5b4;
+    border: 2px solid #d2691e;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .product-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #aaa;
+  }
+
+  .order-details p {
+    margin: 5px 0;
+    font-size: 15px;
+  }
+
+  .order-details strong {
+    color: #5a2a00;
+  }
+</style>
+
+</head>
+<body>
+  <h2>Orders for Your Products</h2>
+  <div id="orderList"></div>
+
+  <script>
+    const SERVER_ROOT = "http://localhost:3000";
+
+    async function loadVendorOrders() {
+      const token = sessionStorage.getItem("token");
+      const res = await fetch(`${SERVER_ROOT}/order/vendor/orders`, {
+        method: "GET",
+        headers: {
+          "Authorization": token
+        }
+      });
+
+      const data = await res.json();
+      const orderList = document.getElementById("orderList");
+      orderList.innerHTML = "";
+
+      if (data.error) {
+        orderList.innerHTML = `<p>${data.message}</p>`;
+        return;
+      }
+
+      data.data.forEach(order => {
+        orderList.innerHTML += `
+          <div class="order-card">
+            <img src="/uploads/${order.image}" class="product-image" alt=Product Image">
+            <div class="order-details">
+            <p><strong>Product:</strong> ${order.name}</p>
+            <p><strong>Price:</strong> ₹${order.price}</p>
+            <p><strong>Qty:</strong> ${order.quantity}</p>
+            <p><strong>Status:</strong> ${order.status}</p>
+            <p><strong>Ordered BY:</strong> ${order.buyername} (User ID: ${order.buyerid})</p>
+
+          </div>
+          </div>
+        `;
+      });
+    }
+
+    loadVendorOrders();
+  </script>
+</body>
+</html>

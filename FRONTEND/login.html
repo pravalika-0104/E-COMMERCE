@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+</head>
+<body>
+    <form  method="post" onsubmit=" login(); return false;">
+        <h2>Login Here..</h2>
+        <input id="uname" required type="text" placeholder="username">
+        <input id="upass" required type="password" placeholder="password">
+        <button>Login</button>
+        <div>
+         <a href="signup.html">Signup Here..</a>
+        </div>
+
+    </form>
+    <script>
+
+        SERVER_PATH="http://localhost:3000"
+        //Task: study about 
+        async function login(){
+            unameobj=document.getElementById("uname")
+            upassObj=document.getElementById("upass")
+
+             const payload={username:unameobj.value,password:upassObj.value}
+
+            const response=await fetch(`${SERVER_PATH}/auth/login`,{
+                method:"POST",
+                headers:{
+                    'Content-Type':'application/json'
+                    
+                },
+                body:JSON.stringify(payload)
+            })
+            const responseData=await response.json()
+
+            console.log("responseData=",responseData.message)
+            alert("Login success")
+            
+            if(responseData.token){
+                sessionStorage.setItem("token",responseData.token);
+               
+            }
+            if(responseData.role=="Vendor"){
+                location.href="./Vendor/upload.html"
+            }
+            else if(responseData.role=="Customer"){
+                location.href="./Customer/home.html"
+            }
+            else{
+                alert("Login Failed")
+            }
+            return false;
+        }
+    </script>
+</body>
+</html>

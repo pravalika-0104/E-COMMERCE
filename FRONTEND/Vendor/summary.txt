@@ -1,0 +1,32 @@
+Developed an API for get all products
+modified the token fetch logic  from request.body to request.headers.authorization
+Interface the API with Front End file(view_product.html)
+Looped the API result to render the product data as HTML file
+modified the token fetch logic  from request.body to request.headers.authorization
+
+Modified the Get all product APT to return only the product owner by the loggedin user
+    - Get the Logged in userid from the jwt decoded token
+    - Substitute the logged in userid in where condition of the get all products SQL query
+
+
+
+Creating Dynamic Header menu
+-------------------------------------------------
+Create a static vendor Menu.html file
+Dynamic load the file in the header container of all other html files
+Create a header id div element and map the headerObj to point the header element
+Load the "loadMenu.js" in the head of all the  html file
+
+
+Logout
+------------------
+Link the logout button onclick handler to the loadMenu.js
+Logout function will clear all the  session user data and will redirect to the Login page(home.html)
+
+USERNAME-Pending
+-----------------------------------------------
+
+Relationship Table
+-----------------------
+Need to maintain Relationship between user and Cart
+
